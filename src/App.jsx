@@ -1,35 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import SearchBar from './components/SearchBar';
+import TrackList from './components/TrackList';
+import MusicPlayer from './components/MusicPlayer';
+import { searchTracks } from './api/deezerApi';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tracks, setTracks] = useState([]);
+  const [currentTrack, setCurrentTrack] = useState(null);
+
+  const handleSearch = async (query) => {
+    try {
+      const results = await searchTracks(query);
+      setTracks(results);
+    } catch (error) {
+      console.error('Error searching tracks:', error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-100">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8 text-center">Music Player</h1>
+        <SearchBar onSearch={handleSearch} />
+        <TrackList tracks={tracks} onTrackSelect={setCurrentTrack} />
+        {currentTrack && <MusicPlayer track={currentTrack} />}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
